@@ -52,9 +52,18 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   }
 
   void initMarkers() {
-    var myMarker = const Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(30.790380837996715, 30.991261896595972));
+    var myMarkers = places
+        .map(
+          (placeModel) => Marker(
+            icon: BitmapDescriptor.fromAssetImage(ImageConfiguration(.empty), assetName),
+            infoWindow: InfoWindow(title: placeModel.name),
+            position: placeModel.latLng,
+            markerId: MarkerId(
+              placeModel.id.toString(),
+            ),
+          ),
+        )
+        .toSet();
     markers.add((myMarker));
   }
 }
