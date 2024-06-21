@@ -1,8 +1,11 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:map/models/place_model.dart';
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({super.key});
@@ -27,21 +30,13 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   Widget build(BuildContext context) {
     return Stack(children: [
       GoogleMap(
+          zoomControlsEnabled: false,
           markers: markers,
           onMapCreated: (controller) {
             googleMapController = controller;
             initMapStyle();
           },
-          /*cameraTargetBounds: CameraTargetBounds(LatLngBounds(
-              southwest: const LatLng(23.958499556545753, 26.458827024193344),
-              northeast: const LatLng(30.26442963963889, 33.2260286684982))),*/
           initialCameraPosition: initialCameraPosition),
-      Positioned(
-          bottom: 15,
-          left: 100,
-          right: 100,
-          child:
-              ElevatedButton(onPressed: () {}, child: const Text("Book Now")))
     ]);
   }
 
@@ -51,11 +46,13 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     googleMapController.setMapStyle(lightMapStyle);
   }
 
-  void initMarkers() {
+  void initMarkers() async {
+    var customMarkerIcon = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), "assets/images/blood-bank(2).png");
     var myMarkers = places
         .map(
           (placeModel) => Marker(
-            icon: BitmapDescriptor.fromAssetImage(ImageConfiguration(.empty), assetName),
+            icon: customMarkerIcon,
             infoWindow: InfoWindow(title: placeModel.name),
             position: placeModel.latLng,
             markerId: MarkerId(
@@ -64,6 +61,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
           ),
         )
         .toSet();
-    markers.add((myMarker));
+    markers.addAll(myMarkers);
+      setState(() {});
+    }
   }
-}
